@@ -1,7 +1,22 @@
-/// Core module barrel export
+/// Core Module
 /// 
-/// Import this file to access all core functionality:
+/// Shared utilities and base classes used across all features.
+/// 
+/// ## Usage
+/// 
+/// ```dart
 /// import 'package:coursesapp/core/core.dart';
+/// 
+/// // Use failures
+/// return Left(ServerFailure(message: 'Error'));
+/// 
+/// // Use validators
+/// final isValid = Validators.isValidEmail(email);
+/// 
+/// // Use network info
+/// if (await networkInfo.isConnected) { ... }
+/// ```
+library core;
 
 // Constants
 export 'constants/api_constants.dart';

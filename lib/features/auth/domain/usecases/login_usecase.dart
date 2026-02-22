@@ -7,13 +7,13 @@ import 'package:coursesapp/features/auth/domain/repositories/auth_repository.dar
 
 /// Use case for user login with email and password.
 class LoginUseCase implements UseCase<UserEntity, LoginParams> {
-  final AuthRepository repository;
+  final AuthRepository _repository;
 
-  LoginUseCase(this.repository);
+  LoginUseCase(this._repository);
 
   @override
   Future<Either<Failure, UserEntity>> call(LoginParams params) async {
-    return await repository.login(
+    return await _repository.login(
       email: params.email,
       password: params.password,
     );

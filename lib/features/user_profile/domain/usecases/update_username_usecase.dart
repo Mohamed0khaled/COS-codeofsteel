@@ -4,21 +4,22 @@ import 'package:coursesapp/core/errors/failures.dart';
 import 'package:coursesapp/core/usecases/usecase.dart';
 import 'package:coursesapp/features/user_profile/domain/repositories/user_profile_repository.dart';
 
-/// Use case to update the username
+/// Use case to update the username.
 class UpdateUsernameUseCase implements UseCase<Unit, UpdateUsernameParams> {
-  final UserProfileRepository repository;
+  final UserProfileRepository _repository;
 
-  UpdateUsernameUseCase(this.repository);
+  UpdateUsernameUseCase(this._repository);
 
   @override
   Future<Either<Failure, Unit>> call(UpdateUsernameParams params) {
-    return repository.updateUsername(
+    return _repository.updateUsername(
       userId: params.userId,
       newUsername: params.newUsername,
     );
   }
 }
 
+/// Parameters for UpdateUsernameUseCase.
 class UpdateUsernameParams extends Equatable {
   final String userId;
   final String newUsername;

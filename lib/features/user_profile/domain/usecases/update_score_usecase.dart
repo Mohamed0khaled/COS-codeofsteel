@@ -5,23 +5,24 @@ import 'package:coursesapp/core/usecases/usecase.dart';
 import 'package:coursesapp/features/user_profile/domain/entities/user_profile_entity.dart';
 import 'package:coursesapp/features/user_profile/domain/repositories/user_profile_repository.dart';
 
-/// Use case to update the user score
+/// Use case to update the user score.
 /// 
-/// This also recalculates and updates rank and level
+/// This also recalculates and updates rank and level.
 class UpdateScoreUseCase implements UseCase<UserProfileEntity, UpdateScoreParams> {
-  final UserProfileRepository repository;
+  final UserProfileRepository _repository;
 
-  UpdateScoreUseCase(this.repository);
+  UpdateScoreUseCase(this._repository);
 
   @override
   Future<Either<Failure, UserProfileEntity>> call(UpdateScoreParams params) {
-    return repository.updateScore(
+    return _repository.updateScore(
       userId: params.userId,
       newScore: params.newScore,
     );
   }
 }
 
+/// Parameters for UpdateScoreUseCase.
 class UpdateScoreParams extends Equatable {
   final String userId;
   final int newScore;

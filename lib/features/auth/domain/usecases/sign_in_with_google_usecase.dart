@@ -6,12 +6,12 @@ import 'package:coursesapp/features/auth/domain/repositories/auth_repository.dar
 
 /// Use case for Google Sign-In.
 class SignInWithGoogleUseCase implements UseCase<UserEntity, NoParams> {
-  final AuthRepository repository;
+  final AuthRepository _repository;
 
-  SignInWithGoogleUseCase(this.repository);
+  SignInWithGoogleUseCase(this._repository);
 
   @override
   Future<Either<Failure, UserEntity>> call(NoParams params) async {
-    return await repository.signInWithGoogle();
+    return await _repository.signInWithGoogle();
   }
 }

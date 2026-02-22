@@ -23,6 +23,7 @@
 ///   },
 /// );
 /// ```
+library user_profile;
 
 // Domain
 export 'domain/entities/user_profile_entity.dart';

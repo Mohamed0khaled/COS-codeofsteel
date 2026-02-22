@@ -5,12 +5,12 @@ import 'package:coursesapp/features/auth/domain/repositories/auth_repository.dar
 
 /// Use case for user logout.
 class LogoutUseCase implements UseCase<void, NoParams> {
-  final AuthRepository repository;
+  final AuthRepository _repository;
 
-  LogoutUseCase(this.repository);
+  LogoutUseCase(this._repository);
 
   @override
   Future<Either<Failure, void>> call(NoParams params) async {
-    return await repository.logout();
+    return await _repository.logout();
   }
 }

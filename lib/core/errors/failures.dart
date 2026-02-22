@@ -1,7 +1,14 @@
 import 'package:equatable/equatable.dart';
 
 /// Base class for all failures in the application.
+/// 
 /// Failures represent expected errors that can be handled gracefully.
+/// Always use named parameters when creating failures:
+/// 
+/// ```dart
+/// return Left(ServerFailure(message: 'Custom error message'));
+/// return Left(NetworkFailure()); // Uses default message
+/// ```
 abstract class Failure extends Equatable {
   final String message;
   final int? code;
@@ -15,7 +22,7 @@ abstract class Failure extends Equatable {
   List<Object?> get props => [message, code];
 }
 
-/// Failure when there's no internet connection
+/// Failure when there's no internet connection.
 class NetworkFailure extends Failure {
   const NetworkFailure({
     super.message = 'No internet connection. Please check your network.',
@@ -23,7 +30,7 @@ class NetworkFailure extends Failure {
   });
 }
 
-/// Failure when Firebase operations fail
+/// Failure when Firebase operations fail.
 class FirebaseFailure extends Failure {
   const FirebaseFailure({
     required super.message,
@@ -31,7 +38,7 @@ class FirebaseFailure extends Failure {
   });
 }
 
-/// Failure when authentication fails
+/// Failure when authentication fails.
 class AuthFailure extends Failure {
   const AuthFailure({
     required super.message,
@@ -39,7 +46,7 @@ class AuthFailure extends Failure {
   });
 }
 
-/// Failure when server returns an error
+/// Failure when server returns an error.
 class ServerFailure extends Failure {
   const ServerFailure({
     super.message = 'Server error occurred. Please try again later.',
@@ -47,7 +54,7 @@ class ServerFailure extends Failure {
   });
 }
 
-/// Failure for cache/local storage operations
+/// Failure for cache/local storage operations.
 class CacheFailure extends Failure {
   const CacheFailure({
     super.message = 'Failed to access local storage.',
@@ -55,7 +62,7 @@ class CacheFailure extends Failure {
   });
 }
 
-/// Failure for invalid input data
+/// Failure for invalid input data.
 class ValidationFailure extends Failure {
   const ValidationFailure({
     required super.message,
@@ -63,7 +70,7 @@ class ValidationFailure extends Failure {
   });
 }
 
-/// Generic unexpected failure
+/// Generic unexpected failure.
 class UnexpectedFailure extends Failure {
   const UnexpectedFailure({
     super.message = 'An unexpected error occurred.',

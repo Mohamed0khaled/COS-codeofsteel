@@ -6,12 +6,12 @@ import 'package:coursesapp/features/auth/domain/repositories/auth_repository.dar
 
 /// Use case to get the currently authenticated user.
 class GetCurrentUserUseCase implements UseCase<UserEntity, NoParams> {
-  final AuthRepository repository;
+  final AuthRepository _repository;
 
-  GetCurrentUserUseCase(this.repository);
+  GetCurrentUserUseCase(this._repository);
 
   @override
   Future<Either<Failure, UserEntity>> call(NoParams params) async {
-    return await repository.getCurrentUser();
+    return await _repository.getCurrentUser();
   }
 }

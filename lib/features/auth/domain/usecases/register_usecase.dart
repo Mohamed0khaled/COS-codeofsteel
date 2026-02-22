@@ -7,13 +7,13 @@ import 'package:coursesapp/features/auth/domain/repositories/auth_repository.dar
 
 /// Use case for user registration with email and password.
 class RegisterUseCase implements UseCase<UserEntity, RegisterParams> {
-  final AuthRepository repository;
+  final AuthRepository _repository;
 
-  RegisterUseCase(this.repository);
+  RegisterUseCase(this._repository);
 
   @override
   Future<Either<Failure, UserEntity>> call(RegisterParams params) async {
-    return await repository.register(
+    return await _repository.register(
       email: params.email,
       password: params.password,
       username: params.username,

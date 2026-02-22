@@ -6,21 +6,28 @@ import 'package:coursesapp/features/user_profile/domain/usecases/update_score_us
 import 'package:coursesapp/features/user_profile/domain/usecases/create_user_profile_usecase.dart';
 import 'package:coursesapp/features/user_profile/presentation/cubit/profile_state.dart';
 
-/// Cubit for managing user profile state
+/// Cubit for managing user profile state.
+/// 
+/// Handles all profile-related business operations and state transitions.
 class ProfileCubit extends Cubit<ProfileState> {
-  final GetUserProfileUseCase getUserProfileUseCase;
-  final UpdateUsernameUseCase updateUsernameUseCase;
-  final UpdateProfileImageUseCase updateProfileImageUseCase;
-  final UpdateScoreUseCase updateScoreUseCase;
-  final CreateUserProfileUseCase createUserProfileUseCase;
+  final GetUserProfileUseCase _getUserProfileUseCase;
+  final UpdateUsernameUseCase _updateUsernameUseCase;
+  final UpdateProfileImageUseCase _updateProfileImageUseCase;
+  final UpdateScoreUseCase _updateScoreUseCase;
+  final CreateUserProfileUseCase _createUserProfileUseCase;
 
   ProfileCubit({
-    required this.getUserProfileUseCase,
-    required this.updateUsernameUseCase,
-    required this.updateProfileImageUseCase,
-    required this.updateScoreUseCase,
-    required this.createUserProfileUseCase,
-  }) : super(const ProfileInitial());
+    required GetUserProfileUseCase getUserProfileUseCase,
+    required UpdateUsernameUseCase updateUsernameUseCase,
+    required UpdateProfileImageUseCase updateProfileImageUseCase,
+    required UpdateScoreUseCase updateScoreUseCase,
+    required CreateUserProfileUseCase createUserProfileUseCase,
+  })  : _getUserProfileUseCase = getUserProfileUseCase,
+        _updateUsernameUseCase = updateUsernameUseCase,
+        _updateProfileImageUseCase = updateProfileImageUseCase,
+        _updateScoreUseCase = updateScoreUseCase,
+        _createUserProfileUseCase = createUserProfileUseCase,
+        super(const ProfileInitial());
 
   /// Load the user profile for the given user ID
   Future<void> loadProfile(String userId) async {
@@ -31,7 +38,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     emit(const ProfileLoading());
 
-    final result = await getUserProfileUseCase(
+    final result = await _getUserProfileUseCase(
       GetUserProfileParams(userId: userId),
     );
 
@@ -53,7 +60,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(const ProfileLoading());
     }
 
-    final result = await getUserProfileUseCase(
+    final result = await _getUserProfileUseCase(
       GetUserProfileParams(userId: userId),
     );
 
@@ -73,7 +80,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     emit(ProfileUpdating(currentState.profile));
 
-    final result = await updateUsernameUseCase(
+    final result = await _updateUsernameUseCase(
       UpdateUsernameParams(userId: userId, newUsername: newUsername),
     );
 
@@ -101,7 +108,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     emit(ProfileUpdating(currentState.profile));
 
-    final result = await updateProfileImageUseCase(
+    final result = await _updateProfileImageUseCase(
       UpdateProfileImageParams(userId: userId, imageUrl: imageUrl),
     );
 
@@ -128,7 +135,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     emit(ProfileUpdating(currentState.profile));
 
-    final result = await updateScoreUseCase(
+    final result = await _updateScoreUseCase(
       UpdateScoreParams(userId: userId, newScore: newScore),
     );
 
@@ -152,7 +159,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   }) async {
     emit(const ProfileLoading());
 
-    final result = await createUserProfileUseCase(
+    final result = await _createUserProfileUseCase(
       CreateUserProfileParams(
         userId: userId,
         username: username,

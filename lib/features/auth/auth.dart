@@ -1,7 +1,33 @@
-// Auth Feature Barrel Export
-//
-// This file exports all public auth feature classes.
-// Import this file to access auth functionality.
+/// Auth Feature
+/// 
+/// Clean Architecture implementation for user authentication.
+/// 
+/// ## Usage
+/// 
+/// ```dart
+/// import 'package:coursesapp/features/auth/auth.dart';
+/// 
+/// // In widget
+/// BlocProvider<AuthCubit>(
+///   create: (_) => sl<AuthCubit>()..checkAuthStatus(),
+///   child: MyApp(),
+/// );
+/// 
+/// // Access auth state
+/// BlocBuilder<AuthCubit, AuthState>(
+///   builder: (context, state) {
+///     if (state is AuthAuthenticated) {
+///       return HomePage();
+///     }
+///     return AuthPage();
+///   },
+/// );
+/// 
+/// // Trigger actions
+/// context.read<AuthCubit>().login(email: email, password: password);
+/// context.read<AuthCubit>().logout();
+/// ```
+library auth;
 
 // Domain - Entities
 export 'domain/entities/user_entity.dart';
