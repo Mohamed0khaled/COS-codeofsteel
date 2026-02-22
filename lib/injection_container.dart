@@ -30,6 +30,12 @@ import 'package:coursesapp/features/settings/settings.dart';
 // Onboarding Feature
 import 'package:coursesapp/features/onboarding/onboarding.dart';
 
+// Theme Feature
+import 'package:coursesapp/features/theme/theme.dart';
+
+// Localization Feature
+import 'package:coursesapp/features/localization/localization.dart';
+
 /// Global service locator instance
 final sl = GetIt.instance;
 
@@ -105,6 +111,12 @@ Future<void> init() async {
 
   // ----- ONBOARDING FEATURE -----
   _initOnboardingFeature();
+
+  // ----- THEME FEATURE -----
+  _initThemeFeature();
+
+  // ----- LOCALIZATION FEATURE -----
+  _initLocalizationFeature();
 }
 
 //============================================================
@@ -422,9 +434,54 @@ void _initOnboardingFeature() {
   );
 }
 
-// void _initSettingsFeature() {
-//   // Cubits
-//   // Use Cases
-//   // Repositories
-//   // Data Sources
-// }
+void _initThemeFeature() {
+  // Data Sources
+  sl.registerLazySingleton<ThemeLocalDataSource>(
+    () => ThemeLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<ThemeRepository>(
+    () => ThemeRepositoryImpl(localDataSource: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetTheme(sl()));
+  sl.registerLazySingleton(() => SaveTheme(sl()));
+  sl.registerLazySingleton(() => ToggleTheme(sl()));
+
+  // Cubits - Factory so each screen gets a fresh instance
+  sl.registerFactory(
+    () => ThemeCubit(
+      getTheme: sl(),
+      saveTheme: sl(),
+      toggleThemeUseCase: sl(),
+    ),
+  );
+}
+
+void _initLocalizationFeature() {
+  // Data Sources
+  sl.registerLazySingleton<LocaleLocalDataSource>(
+    () => LocaleLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<LocaleRepository>(
+    () => LocaleRepositoryImpl(localDataSource: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetLocale(sl()));
+  sl.registerLazySingleton(() => SaveLocale(sl()));
+  sl.registerLazySingleton(() => ToggleLocale(sl()));
+
+  // Cubits - Factory so each screen gets a fresh instance
+  sl.registerFactory(
+    () => LocaleCubit(
+      getLocale: sl(),
+      saveLocale: sl(),
+      toggleLocaleUseCase: sl(),
+    ),
+  );
+}

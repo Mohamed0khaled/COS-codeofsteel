@@ -22,6 +22,8 @@ import 'package:coursesapp/features/quiz/quiz.dart';
 import 'package:coursesapp/features/problem_solving/problem_solving.dart';
 import 'package:coursesapp/features/settings/settings.dart';
 import 'package:coursesapp/features/onboarding/onboarding.dart';
+import 'package:coursesapp/features/theme/theme.dart';
+import 'package:coursesapp/features/localization/localization.dart';
 import 'package:coursesapp/core/providers/user_id_provider.dart';
 
 void main() async {
@@ -70,6 +72,12 @@ void main() async {
           ),
           BlocProvider<OnboardingCubit>(
             create: (_) => di.sl<OnboardingCubit>(),
+          ),
+          BlocProvider<ThemeCubit>(
+            create: (_) => di.sl<ThemeCubit>()..loadTheme(),
+          ),
+          BlocProvider<LocaleCubit>(
+            create: (_) => di.sl<LocaleCubit>()..loadLocale(),
           ),
         ],
         child: const MyApp(),
