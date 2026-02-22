@@ -5,7 +5,7 @@ import 'package:coursesapp/Auth/AuthController/authcon.dart';
 import 'package:coursesapp/Controller/course_class.dart';
 import 'package:coursesapp/View/coming%20soon/comingsoon.dart';
 import 'package:coursesapp/View/homepage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coursesapp/core/providers/user_id_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -26,7 +26,8 @@ class _MPAssimplyPageState extends State<MPAssimplyPage> {
 
   // Firebase Control
   CourseService courseService = CourseService();
-  String userId = FirebaseAuth.instance.currentUser!.uid;
+  late String userId;
+  bool _userIdInitialized = false;
 
   Course? course;
   bool _isBookMarked = false;
@@ -48,8 +49,20 @@ class _MPAssimplyPageState extends State<MPAssimplyPage> {
   @override
   void initState() {
     super.initState();
-    _loadCourseDetails();
-    _checkCourseOwnership();
+    // Note: _loadCourseDetails and _checkCourseOwnership called in didChangeDependencies
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_userIdInitialized) {
+      userId = UserIdProvider.of(context);
+      if (userId.isNotEmpty) {
+        _userIdInitialized = true;
+        _loadCourseDetails();
+        _checkCourseOwnership();
+      }
+    }
   }
 
   Future<void> _addcourse() async {

@@ -14,6 +14,7 @@ class DrawerPage extends StatefulWidget {
 }
 
 class _DrawerPageState extends State<DrawerPage> {
+  // TODO: Remove FirebaseAuth import and get user from AuthCubit when fully migrated
   final user = FirebaseAuth.instance.currentUser;
   final UserData _userData = UserData();
 

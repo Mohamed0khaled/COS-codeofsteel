@@ -15,6 +15,9 @@ export 'errors/failures.dart';
 // Network
 export 'network/network_info.dart';
 
+// Providers
+export 'providers/user_id_provider.dart';
+
 // Use Cases
 export 'usecases/usecase.dart';
 

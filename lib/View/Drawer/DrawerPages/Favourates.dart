@@ -1,7 +1,7 @@
 import 'package:coursesapp/Controller/course_class.dart';
 import 'package:coursesapp/Courses/cpp/cpp_home.dart';
 import 'package:coursesapp/View/Drawer/Drawer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coursesapp/core/providers/user_id_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,12 +18,15 @@ class _FavouratesPageState extends State<FavouratesPage> {
   final CourseService _courseService = CourseService();
   List<Course> favoriteCourses = [];
   bool isLoading = true;
-  String userId = FirebaseAuth.instance.currentUser!.uid;
+  late String userId;
 
   @override
-  void initState() {
-    super.initState();
-    fetchFavoriteCourses();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userId = UserIdProvider.of(context);
+    if (userId.isNotEmpty && favoriteCourses.isEmpty && isLoading) {
+      fetchFavoriteCourses();
+    }
   }
 
   Future<void> fetchFavoriteCourses() async {

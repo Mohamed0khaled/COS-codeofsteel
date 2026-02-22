@@ -1,7 +1,5 @@
 // ignore_for_file: unused_field
 
-import 'dart:ui' as ui;
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:coursesapp/Auth/AuthController/authcon.dart';
 import 'package:coursesapp/Controller/course_class.dart';
@@ -9,7 +7,7 @@ import 'package:coursesapp/Courses/cpp/cppinside.dart';
 import 'package:coursesapp/View/courses/Popular/wating.dart';
 import 'package:coursesapp/View/homepage.dart';
 import 'package:coursesapp/View/sharemessage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coursesapp/core/providers/user_id_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -31,7 +29,8 @@ class _CppPageState extends State<CppPage> {
 
   // Firebase Control
   CourseService courseService = CourseService();
-  String userId = FirebaseAuth.instance.currentUser!.uid;
+  late String userId;
+  bool _userIdInitialized = false;
 
   Course? course;
   bool _isBookMarked = false;
@@ -54,8 +53,20 @@ class _CppPageState extends State<CppPage> {
   @override
   void initState() {
     super.initState();
-    _loadCourseDetails();
-    _checkCourseOwnership();
+    // Note: _loadCourseDetails and _checkCourseOwnership called in didChangeDependencies
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_userIdInitialized) {
+      userId = UserIdProvider.of(context);
+      if (userId.isNotEmpty) {
+        _userIdInitialized = true;
+        _loadCourseDetails();
+        _checkCourseOwnership();
+      }
+    }
   }
 
   Future<void> _addcourse() async {

@@ -19,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final UserData _userData = UserData();
+  // TODO: Remove FirebaseAuth import and get user from AuthCubit when fully migrated
   final user = FirebaseAuth.instance.currentUser;
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();

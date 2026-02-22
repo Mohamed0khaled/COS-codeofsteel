@@ -7,25 +7,43 @@ import 'package:coursesapp/Controller/theme/theme.dart';
 import 'package:coursesapp/View/homepage.dart';
 import 'package:coursesapp/firebase_options.dart';
 import 'package:coursesapp/welcome/welcomeManager.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 
+// Clean Architecture imports
+import 'package:coursesapp/injection_container.dart' as di;
+import 'package:coursesapp/features/auth/auth.dart';
+import 'package:coursesapp/core/providers/user_id_provider.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+  
+  // Initialize Firebase first (required for DI)
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
+  // Initialize dependency injection
+  await di.init();
+  
   // Initialize controllers
   Get.put(ThemeController());
   Get.put(LangController());
+  
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => Drawercontroller()),
       ],
-      child: const MyApp(),
+      child: BlocProvider<AuthCubit>(
+        create: (_) => di.sl<AuthCubit>()..checkAuthStatus(),
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -47,31 +65,11 @@ class _MyAppState extends State<MyApp> {
     _initialization = initializeApp();
   }
 
-  // Perform all app initialization tasks
+  // Perform remaining app initialization tasks (Firebase already initialized in main)
   Future<void> initializeApp() async {
-    // Initialize Firebase
-    try {
-      if (Firebase.apps.isEmpty) {
-        await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        );
-      }
-      print('✅ Firebase initialized successfully');
-    } catch (e) {
-      print('❌ Firebase initialization failed: $e');
-    }
-
     // Check if it's the first time the app is opened
     _isFirstTime = await AppOpenChecker.isFirstTime();
-
-    // Listen to auth state changes
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
-      }
-    });
+    print('✅ App initialization complete');
   }
 
   final ThemeController _themeController = Get.put(ThemeController());
@@ -84,7 +82,11 @@ class _MyAppState extends State<MyApp> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Display loading indicator while waiting for initialization
-          return const Center(child: CircularProgressIndicator());
+          return const MaterialApp(
+            home: Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+          );
         } else if (snapshot.hasError) {
           // Handle any errors during initialization
           return MaterialApp(
@@ -93,29 +95,49 @@ class _MyAppState extends State<MyApp> {
             ),
           );
         } else {
-          // When complete, show the main app
-          return Obx(() {
-            return GetMaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: _themeController.themeData,
-              home: _handleUserNav(),
-            );
-          });
+          // When complete, show the main app with BlocBuilder for auth state
+          return BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, authState) {
+              // Get userId from auth state for UserIdProvider
+              final userId = authState is AuthAuthenticated 
+                  ? authState.user.uid 
+                  : '';
+              
+              return UserIdProvider(
+                userId: userId,
+                child: Obx(() {
+                  return GetMaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    theme: _themeController.themeData,
+                    home: _handleUserNav(authState),
+                  );
+                }),
+              );
+            },
+          );
         }
       },
     );
   }
 
-  // Navigation logic based on first time and user auth state
-  Widget _handleUserNav() {
+  // Navigation logic based on first time and auth state from Cubit
+  Widget _handleUserNav(AuthState authState) {
     if (_isFirstTime) {
       return WelcomeManagerPage();
-    } else if (FirebaseAuth.instance.currentUser == null) {
+    } else if (authState is AuthUnauthenticated || authState is AuthInitial) {
       return const AuthPage();
-    } else if (!FirebaseAuth.instance.currentUser!.emailVerified) {
+    } else if (authState is AuthAuthenticated && !authState.user.emailVerified) {
       return ActivatePage();
-    } else {
+    } else if (authState is AuthAuthenticated) {
       return const HomePage();
+    } else if (authState is AuthLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    } else if (authState is AuthError) {
+      return const AuthPage(); // On error, show auth page
+    } else {
+      return const AuthPage(); // Default fallback
     }
   }
 }

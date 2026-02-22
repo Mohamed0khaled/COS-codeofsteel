@@ -11,6 +11,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Legacy AuthController - manages form state and auth operations.
+/// 
+/// TODO: MIGRATION PLAN
+/// 1. Move TextEditingControllers to individual screen widgets
+/// 2. Replace signUp/signIn/signInWithGoogle with AuthCubit methods
+/// 3. Replace LogOut with AuthCubit.logout()
+/// 4. Replace navigation (Get.to/Get.offAll) with BlocListener on AuthCubit
+/// 5. Move error handling to AuthCubit states (AuthError)
+/// 6. Delete this file once all screens are migrated
 class AuthController {
   final UserData _userData = UserData();
   // Controllers for email and password input fields

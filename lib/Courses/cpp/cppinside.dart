@@ -6,7 +6,7 @@ import 'package:coursesapp/Courses/cpp/cpp_home.dart';
 import 'package:coursesapp/Courses/cpp/pdfs/pdf_Template.dart';
 import 'package:coursesapp/Courses/video_page.dart';
 import 'package:coursesapp/View/courses/intile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coursesapp/core/providers/user_id_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -22,7 +22,8 @@ class CppCoursePage extends StatefulWidget {
 class _CppCoursePageState extends State<CppCoursePage> {
   // Firebase and Course details
   final CourseService courseService = CourseService();
-  final String userId = FirebaseAuth.instance.currentUser!.uid;
+  late String userId;
+  bool _userIdInitialized = false;
   Course? course;
   int progress = 2;
   // Quizes Class
@@ -68,7 +69,19 @@ class _CppCoursePageState extends State<CppCoursePage> {
   void initState() {
     super.initState();
     _initializeUnlockedTiles(); // Initialize _unlockedTiles based on the initial progress value
-    _loadCourseDetails(); // Load course details on initialization
+    // Note: _loadCourseDetails called in didChangeDependencies
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_userIdInitialized) {
+      userId = UserIdProvider.of(context);
+      if (userId.isNotEmpty) {
+        _userIdInitialized = true;
+        _loadCourseDetails(); // Load course details after userId is available
+      }
+    }
   }
 
   void _initializeUnlockedTiles() {

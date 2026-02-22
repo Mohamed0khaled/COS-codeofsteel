@@ -1,12 +1,14 @@
 import 'package:coursesapp/View/snakbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:coursesapp/Auth/AuthView/auth.dart';
 import 'package:coursesapp/Auth/AuthController/userdatacontroller.dart';
 import 'package:coursesapp/View/Drawer/Drawer.dart';
+import 'package:coursesapp/features/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -17,6 +19,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  // TODO: Remove FirebaseAuth import when fully migrated to AuthCubit
   final User? user = FirebaseAuth.instance.currentUser;
   final UserData _userData = UserData();
   String _username = "Loading...";
@@ -334,7 +337,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           child: MaterialButton(
                             onPressed: () async {
-                              await FirebaseAuth.instance.signOut();
+                              // Use AuthCubit for logout
+                              context.read<AuthCubit>().logout();
                               Get.offAll(() => const AuthPage());
                             },
                             child: const Text(

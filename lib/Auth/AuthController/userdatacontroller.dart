@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// TODO: Migrate to AuthCubit - inject userId from repository instead of FirebaseAuth.instance
 class UserData {
   final user = FirebaseAuth.instance.currentUser;
   int score = 0;
   int level = 0;
   String rank = "E";
+
+  /// Safe getter for current user ID. Returns empty string if not logged in.
+  /// TODO: Replace with injected userId from AuthCubit/Repository
+  String get _currentUserId => FirebaseAuth.instance.currentUser?.uid ?? '';
 
   UserData() {
     updateRankAndLevel();
@@ -75,7 +80,8 @@ class UserData {
   }
 
   Future<void> updateUserpspl(String PSPL) async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = _currentUserId;
+    if (userId.isEmpty) return; // Guard: user not logged in
     final userDoc =
         usersCollection.doc(userId).collection("userdata").doc("info");
 
@@ -88,7 +94,8 @@ class UserData {
   }
 
   Future<String> getUserpspl() async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = _currentUserId;
+    if (userId.isEmpty) return "Default PSPL"; // Guard: user not logged in
     final userDoc =
         usersCollection.doc(userId).collection("userdata").doc("info");
 
@@ -114,7 +121,8 @@ class UserData {
 
   // Function to store or update the user's profile image URL
   Future<void> updateUserImage(String imageUrl) async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = _currentUserId;
+    if (userId.isEmpty) return; // Guard: user not logged in
     final userDoc =
         usersCollection.doc(userId).collection("userdata").doc("info");
 
@@ -128,7 +136,8 @@ class UserData {
 
   // Function to retrieve the user's profile image URL
   Future<String?> getUserImage() async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = _currentUserId;
+    if (userId.isEmpty) return null; // Guard: user not logged in
     final userDoc =
         usersCollection.doc(userId).collection("userdata").doc("info");
 
@@ -147,7 +156,8 @@ class UserData {
 
   // Function to retrieve the username of the current user
   Future<String> getUsername() async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = _currentUserId;
+    if (userId.isEmpty) return "Guest"; // Guard: user not logged in
     final userDoc =
         usersCollection.doc(userId).collection("userdata").doc("info");
 
@@ -173,18 +183,15 @@ class UserData {
   }
 
   // Function to retrieve the user ID
+  // TODO: Inject userId from AuthCubit instead of accessing FirebaseAuth directly
   String getUserId() {
-    try {
-      return FirebaseAuth.instance.currentUser!.uid;
-    } catch (e) {
-      print("Error retrieving user ID: $e");
-      return "";
-    }
+    return _currentUserId;
   }
 
   // Function to update the username of the current user
   Future<void> updateUsername(String newUsername) async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = _currentUserId;
+    if (userId.isEmpty) return; // Guard: user not logged in
     final userDoc =
         usersCollection.doc(userId).collection("userdata").doc("info");
 
