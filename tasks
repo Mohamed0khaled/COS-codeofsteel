@@ -1,0 +1,39 @@
+1- auth UI
+2- auth logic and firebase :
+    - sign up 
+    - sign in 
+    - sign in with google
+    - activate your email when sign up 
+3- Choose Page
+4- Start in Courses Pages
+5- Finish Cources TimeLine Mp 
+6- Fb --------------------------------------------------
+7- Home Screen page
+8- Drawer Pages:
+    - Home page
+    - Favourates
+    - Saved
+    - Profile
+    - Setting 
+    - Programmer(Contact with me)
+9- making firebase database and save course(finished,saved,fav,prog,id,name) 
+10- making save and favorate logic firebase 
+11- record the progress in firebase and handle it
+12- loading indicators 
+13- favourate and saved pages 
+14- making profile page
+15- finish profile and handle levels
+16- fixing the circular images
+
+
+
+
+
+
+
+problems-> userdata class creating when sign in (make is signup only);
+need to made:
+    cashing data
+    creating setting and contact with me translate the app 
+    make change image option
+person icon in the bigining

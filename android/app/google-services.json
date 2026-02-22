@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "937709820605",
+    "project_id": "code-of-steel",
+    "storage_bucket": "code-of-steel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937709820605:android:51878318b66c5e117e35d4",
+        "android_client_info": {
+          "package_name": "com.example.coursesapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937709820605-8mr1fmdr517m44ugtr0vs1gbqqek7lf3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.coursesapp",
+            "certificate_hash": "a2b96d03ba22d093b54931e5b35210cbe6e63a1e"
+          }
+        },
+        {
+          "client_id": "937709820605-ei5j964dkuislg5hmltm89svhoprddnb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4obi8G-sBc05HR74HjGZoaGhWk1HYUa8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937709820605-ei5j964dkuislg5hmltm89svhoprddnb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "937709820605-onlnqo64ldv6o2qn38mulek2nt5tsjrq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.coursesapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
