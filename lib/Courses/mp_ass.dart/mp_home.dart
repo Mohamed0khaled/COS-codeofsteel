@@ -299,6 +299,7 @@ class _MPAssimplyPageState extends State<MPAssimplyPage> {
                                                 .trim()
                                                 .isNotEmpty) {
                                               courseService.checkCode(
+                                                  userId,
                                                   discount.text,
                                                   0001,
                                                   course_price);

@@ -305,6 +305,7 @@ class _CppPageState extends State<CppPage> {
                                                 .trim()
                                                 .isNotEmpty) {
                                               courseService.checkCode(
+                                                  userId,
                                                   discount.text,
                                                   0000,
                                                   course_price);

@@ -1,9 +1,6 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-String userId = FirebaseAuth.instance.currentUser!.uid;
 
 class Course {
   int id;
@@ -318,7 +315,7 @@ class CourseService {
     }
   }
 
-  Future<void> checkCode(String code, int course_id, int old_price) async {
+  Future<void> checkCode(String userId, String code, int course_id, int old_price) async {
     try {
       CollectionReference discountCollection =
           FirebaseFirestore.instance.collection('discount');
