@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:coursesapp/core/network/network_info.dart';
+
+// Auth Feature
+import 'package:coursesapp/features/auth/auth.dart';
 
 /// Global service locator instance
 final sl = GetIt.instance;
@@ -51,8 +55,7 @@ Future<void> init() async {
   //============================================================
   
   // ----- AUTH FEATURE -----
-  // TODO: Uncomment when auth feature is migrated
-  // _initAuthFeature();
+  _initAuthFeature();
 
   // ----- USER PROFILE FEATURE -----
   // TODO: Uncomment when user profile feature is migrated
@@ -124,12 +127,42 @@ Future<void> init() async {
 
 // Placeholder functions - uncomment and implement during feature migration
 
-// void _initAuthFeature() {
-//   // Cubits
-//   // Use Cases
-//   // Repositories
-//   // Data Sources
-// }
+void _initAuthFeature() {
+  // Data Sources
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(
+      firebaseAuth: sl(),
+      firestore: sl(),
+      googleSignIn: GoogleSignIn(),
+    ),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => RegisterUseCase(sl()));
+  sl.registerLazySingleton(() => LogoutUseCase(sl()));
+  sl.registerLazySingleton(() => GetCurrentUserUseCase(sl()));
+  sl.registerLazySingleton(() => SignInWithGoogleUseCase(sl()));
+
+  // Cubits - Factory so each widget gets a fresh instance
+  sl.registerFactory(
+    () => AuthCubit(
+      loginUseCase: sl(),
+      registerUseCase: sl(),
+      logoutUseCase: sl(),
+      getCurrentUserUseCase: sl(),
+      signInWithGoogleUseCase: sl(),
+    ),
+  );
+}
 
 // void _initUserProfileFeature() {
 //   // Cubits
