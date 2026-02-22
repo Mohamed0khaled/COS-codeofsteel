@@ -24,6 +24,12 @@ import 'package:coursesapp/features/quiz/quiz.dart';
 // Problem Solving Feature
 import 'package:coursesapp/features/problem_solving/problem_solving.dart';
 
+// Settings Feature
+import 'package:coursesapp/features/settings/settings.dart';
+
+// Onboarding Feature
+import 'package:coursesapp/features/onboarding/onboarding.dart';
+
 /// Global service locator instance
 final sl = GetIt.instance;
 
@@ -95,8 +101,10 @@ Future<void> init() async {
   _initProblemSolvingFeature();
 
   // ----- SETTINGS FEATURE -----
-  // TODO: Uncomment when settings feature is migrated
-  // _initSettingsFeature();
+  _initSettingsFeature();
+
+  // ----- ONBOARDING FEATURE -----
+  _initOnboardingFeature();
 }
 
 //============================================================
@@ -345,6 +353,71 @@ void _initProblemSolvingFeature() {
       hasApiKey: sl(),
       getPreferredLanguage: sl(),
       setPreferredLanguage: sl(),
+    ),
+  );
+}
+
+void _initSettingsFeature() {
+  // Data Sources
+  sl.registerLazySingleton<SettingsLocalDataSource>(
+    () => SettingsLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+  sl.registerLazySingleton<SettingsRemoteDataSource>(
+    () => SettingsRemoteDataSourceImpl(firestore: sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<SettingsRepository>(
+    () => SettingsRepositoryImpl(
+      localDataSource: sl(),
+      remoteDataSource: sl(),
+      firebaseAuth: sl(),
+    ),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetSettings(sl()));
+  sl.registerLazySingleton(() => SetDarkMode(sl()));
+  sl.registerLazySingleton(() => SetLanguage(sl()));
+  sl.registerLazySingleton(() => SetProgrammingLanguage(sl()));
+  sl.registerLazySingleton(() => IsFirstLaunch(sl()));
+  sl.registerLazySingleton(() => CompleteFirstLaunch(sl()));
+
+  // Cubits - Factory so each screen gets a fresh instance
+  sl.registerFactory(
+    () => SettingsCubit(
+      getSettings: sl(),
+      setDarkMode: sl(),
+      setLanguage: sl(),
+      setProgrammingLanguage: sl(),
+      isFirstLaunch: sl(),
+      completeFirstLaunch: sl(),
+    ),
+  );
+}
+
+void _initOnboardingFeature() {
+  // Data Sources
+  sl.registerLazySingleton<OnboardingLocalDataSource>(
+    () => OnboardingLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<OnboardingRepository>(
+    () => OnboardingRepositoryImpl(localDataSource: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetOnboardingPages(sl()));
+  sl.registerLazySingleton(() => IsOnboardingCompleted(sl()));
+  sl.registerLazySingleton(() => CompleteOnboarding(sl()));
+
+  // Cubits - Factory so each screen gets a fresh instance
+  sl.registerFactory(
+    () => OnboardingCubit(
+      getOnboardingPages: sl(),
+      isOnboardingCompleted: sl(),
+      completeOnboarding: sl(),
     ),
   );
 }

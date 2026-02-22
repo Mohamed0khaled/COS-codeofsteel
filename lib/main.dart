@@ -20,6 +20,8 @@ import 'package:coursesapp/features/auth/auth.dart';
 import 'package:coursesapp/features/courses/courses.dart';
 import 'package:coursesapp/features/quiz/quiz.dart';
 import 'package:coursesapp/features/problem_solving/problem_solving.dart';
+import 'package:coursesapp/features/settings/settings.dart';
+import 'package:coursesapp/features/onboarding/onboarding.dart';
 import 'package:coursesapp/core/providers/user_id_provider.dart';
 
 void main() async {
@@ -62,6 +64,12 @@ void main() async {
           ),
           BlocProvider<ProblemSolvingCubit>(
             create: (_) => di.sl<ProblemSolvingCubit>(),
+          ),
+          BlocProvider<SettingsCubit>(
+            create: (_) => di.sl<SettingsCubit>()..loadSettings(),
+          ),
+          BlocProvider<OnboardingCubit>(
+            create: (_) => di.sl<OnboardingCubit>(),
           ),
         ],
         child: const MyApp(),
