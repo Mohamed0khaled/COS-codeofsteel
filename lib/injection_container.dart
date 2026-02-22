@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,6 +20,9 @@ import 'package:coursesapp/features/courses/courses.dart';
 
 // Quiz Feature
 import 'package:coursesapp/features/quiz/quiz.dart';
+
+// Problem Solving Feature
+import 'package:coursesapp/features/problem_solving/problem_solving.dart';
 
 /// Global service locator instance
 final sl = GetIt.instance;
@@ -51,6 +56,12 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
   
+  // Secure Storage
+  sl.registerLazySingleton<FlutterSecureStorage>(() => const FlutterSecureStorage());
+  
+  // HTTP Client
+  sl.registerLazySingleton<http.Client>(() => http.Client());
+  
   // Network
   sl.registerLazySingleton<InternetConnectionChecker>(
     () => InternetConnectionChecker.instance,
@@ -81,8 +92,7 @@ Future<void> init() async {
   _initQuizFeature();
 
   // ----- PROBLEM SOLVING FEATURE -----
-  // TODO: Uncomment when problem solving feature is migrated
-  // _initProblemSolvingFeature();
+  _initProblemSolvingFeature();
 
   // ----- SETTINGS FEATURE -----
   // TODO: Uncomment when settings feature is migrated
@@ -283,12 +293,61 @@ void _initQuizFeature() {
   );
 }
 
-// void _initProblemSolvingFeature() {
-//   // Cubits
-//   // Use Cases
-//   // Repositories
-//   // Data Sources
-// }
+void _initProblemSolvingFeature() {
+  // Data Sources
+  sl.registerLazySingleton<ProblemSolvingRemoteDataSource>(
+    () => ProblemSolvingRemoteDataSourceImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<ProblemSolvingLocalDataSource>(
+    () => ProblemSolvingLocalDataSourceImpl(
+      secureStorage: sl(),
+      sharedPreferences: sl(),
+    ),
+  );
+  sl.registerLazySingleton<AiEvaluationDataSource>(
+    () => AiEvaluationDataSourceImpl(client: sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<ProblemSolvingRepository>(
+    () => ProblemSolvingRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      aiDataSource: sl(),
+      firebaseAuth: sl(),
+    ),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetRandomProblem(sl()));
+  sl.registerLazySingleton(() => GetAllLevels(sl()));
+  sl.registerLazySingleton(() => GetLevelDetails(sl()));
+  sl.registerLazySingleton(() => SubmitSolution(sl()));
+  sl.registerLazySingleton(() => EvaluateSolution(sl()));
+  sl.registerLazySingleton(() => SaveEvaluationResult(sl()));
+  sl.registerLazySingleton(() => GetSolutionHistory(sl()));
+  sl.registerLazySingleton(() => StoreProblemSolvingApiKey(sl()));
+  sl.registerLazySingleton(() => HasApiKey(sl()));
+  sl.registerLazySingleton(() => GetPreferredLanguage(sl()));
+  sl.registerLazySingleton(() => SetPreferredLanguage(sl()));
+
+  // Cubits - Factory so each screen gets a fresh instance
+  sl.registerFactory(
+    () => ProblemSolvingCubit(
+      getRandomProblem: sl(),
+      getAllLevels: sl(),
+      getLevelDetails: sl(),
+      submitSolution: sl(),
+      evaluateSolution: sl(),
+      saveEvaluationResult: sl(),
+      getSolutionHistory: sl(),
+      storeApiKey: sl(),
+      hasApiKey: sl(),
+      getPreferredLanguage: sl(),
+      setPreferredLanguage: sl(),
+    ),
+  );
+}
 
 // void _initSettingsFeature() {
 //   // Cubits
