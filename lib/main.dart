@@ -18,6 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:coursesapp/injection_container.dart' as di;
 import 'package:coursesapp/features/auth/auth.dart';
 import 'package:coursesapp/features/courses/courses.dart';
+import 'package:coursesapp/features/quiz/quiz.dart';
 import 'package:coursesapp/core/providers/user_id_provider.dart';
 
 void main() async {
@@ -54,6 +55,9 @@ void main() async {
           ),
           BlocProvider<CoursesCubit>(
             create: (_) => di.sl<CoursesCubit>(),
+          ),
+          BlocProvider<QuizCubit>(
+            create: (_) => di.sl<QuizCubit>(),
           ),
         ],
         child: const MyApp(),

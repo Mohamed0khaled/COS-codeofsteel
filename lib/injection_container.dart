@@ -16,6 +16,9 @@ import 'package:coursesapp/features/user_profile/user_profile.dart';
 // Courses Feature
 import 'package:coursesapp/features/courses/courses.dart';
 
+// Quiz Feature
+import 'package:coursesapp/features/quiz/quiz.dart';
+
 /// Global service locator instance
 final sl = GetIt.instance;
 
@@ -75,8 +78,7 @@ Future<void> init() async {
   _initCoursesFeature();
 
   // ----- QUIZ FEATURE -----
-  // TODO: Uncomment when quiz feature is migrated
-  // _initQuizFeature();
+  _initQuizFeature();
 
   // ----- PROBLEM SOLVING FEATURE -----
   // TODO: Uncomment when problem solving feature is migrated
@@ -240,12 +242,46 @@ void _initCoursesFeature() {
   );
 }
 
-// void _initQuizFeature() {
-//   // Cubits
-//   // Use Cases
-//   // Repositories
-//   // Data Sources
-// }
+void _initQuizFeature() {
+  // Data Sources
+  sl.registerLazySingleton<QuizLocalDataSource>(
+    () => QuizLocalDataSourceImpl(),
+  );
+  sl.registerLazySingleton<QuizRemoteDataSource>(
+    () => QuizRemoteDataSourceImpl(),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<QuizRepository>(
+    () => QuizRepositoryImpl(
+      localDataSource: sl(),
+      remoteDataSource: sl(),
+      firestore: sl(),
+    ),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetQuizById(sl()));
+  sl.registerLazySingleton(() => GetQuizzesByCourse(sl()));
+  sl.registerLazySingleton(() => SubmitQuiz(sl()));
+  sl.registerLazySingleton(() => SaveQuizResult(sl()));
+  sl.registerLazySingleton(() => GetQuizHistory(sl()));
+  sl.registerLazySingleton(() => EvaluateCode(sl()));
+  sl.registerLazySingleton(() => StoreApiKey(sl()));
+
+  // Cubits - Factory so each screen gets a fresh instance
+  sl.registerFactory(
+    () => QuizCubit(
+      getQuizById: sl(),
+      getQuizzesByCourse: sl(),
+      submitQuiz: sl(),
+      saveQuizResult: sl(),
+      getQuizHistory: sl(),
+      evaluateCode: sl(),
+      storeApiKey: sl(),
+    ),
+  );
+}
 
 // void _initProblemSolvingFeature() {
 //   // Cubits
