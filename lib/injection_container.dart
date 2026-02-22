@@ -13,6 +13,9 @@ import 'package:coursesapp/features/auth/auth.dart';
 // User Profile Feature
 import 'package:coursesapp/features/user_profile/user_profile.dart';
 
+// Courses Feature
+import 'package:coursesapp/features/courses/courses.dart';
+
 /// Global service locator instance
 final sl = GetIt.instance;
 
@@ -69,8 +72,7 @@ Future<void> init() async {
   _initUserProfileFeature();
 
   // ----- COURSES FEATURE -----
-  // TODO: Uncomment when courses feature is migrated
-  // _initCoursesFeature();
+  _initCoursesFeature();
 
   // ----- QUIZ FEATURE -----
   // TODO: Uncomment when quiz feature is migrated
@@ -201,12 +203,42 @@ void _initUserProfileFeature() {
   );
 }
 
-// void _initCoursesFeature() {
-//   // Cubits
-//   // Use Cases
-//   // Repositories
-//   // Data Sources
-// }
+void _initCoursesFeature() {
+  // Repositories
+  sl.registerLazySingleton<CourseRepository>(
+    () => CourseRepositoryImpl(firestore: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetCourseDetails(sl()));
+  sl.registerLazySingleton(() => GetFavoriteCourses(sl()));
+  sl.registerLazySingleton(() => GetSavedCourses(sl()));
+  sl.registerLazySingleton(() => GetFinishedCourses(sl()));
+  sl.registerLazySingleton(() => ToggleFavorite(sl()));
+  sl.registerLazySingleton(() => ToggleSaved(sl()));
+  sl.registerLazySingleton(() => UpdateCourseProgress(sl()));
+  sl.registerLazySingleton(() => AddCourse(sl()));
+  sl.registerLazySingleton(() => CheckCourseOwnership(sl()));
+  sl.registerLazySingleton(() => ApplyDiscountCode(sl()));
+  sl.registerLazySingleton(() => PurchaseCourse(sl()));
+
+  // Cubits - Factory so each screen gets a fresh instance
+  sl.registerFactory(
+    () => CoursesCubit(
+      getCourseDetails: sl(),
+      getFavoriteCourses: sl(),
+      getSavedCourses: sl(),
+      getFinishedCourses: sl(),
+      toggleFavorite: sl(),
+      toggleSaved: sl(),
+      updateCourseProgress: sl(),
+      addCourse: sl(),
+      checkCourseOwnership: sl(),
+      applyDiscountCode: sl(),
+      purchaseCourse: sl(),
+    ),
+  );
+}
 
 // void _initQuizFeature() {
 //   // Cubits

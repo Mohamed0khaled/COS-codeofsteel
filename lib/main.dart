@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 // Clean Architecture imports
 import 'package:coursesapp/injection_container.dart' as di;
 import 'package:coursesapp/features/auth/auth.dart';
+import 'package:coursesapp/features/courses/courses.dart';
 import 'package:coursesapp/core/providers/user_id_provider.dart';
 
 void main() async {
@@ -46,8 +47,15 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => Drawercontroller()),
       ],
-      child: BlocProvider<AuthCubit>(
-        create: (_) => di.sl<AuthCubit>()..checkAuthStatus(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthCubit>(
+            create: (_) => di.sl<AuthCubit>()..checkAuthStatus(),
+          ),
+          BlocProvider<CoursesCubit>(
+            create: (_) => di.sl<CoursesCubit>(),
+          ),
+        ],
         child: const MyApp(),
       ),
     ),
