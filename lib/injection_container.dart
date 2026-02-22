@@ -10,6 +10,9 @@ import 'package:coursesapp/core/network/network_info.dart';
 // Auth Feature
 import 'package:coursesapp/features/auth/auth.dart';
 
+// User Profile Feature
+import 'package:coursesapp/features/user_profile/user_profile.dart';
+
 /// Global service locator instance
 final sl = GetIt.instance;
 
@@ -25,6 +28,11 @@ final sl = GetIt.instance;
 /// }
 /// ```
 Future<void> init() async {
+  // Prevent re-initialization on hot restart
+  if (sl.isRegistered<FirebaseAuth>()) {
+    return;
+  }
+  
   //============================================================
   // EXTERNAL DEPENDENCIES
   //============================================================
@@ -58,8 +66,7 @@ Future<void> init() async {
   _initAuthFeature();
 
   // ----- USER PROFILE FEATURE -----
-  // TODO: Uncomment when user profile feature is migrated
-  // _initUserProfileFeature();
+  _initUserProfileFeature();
 
   // ----- COURSES FEATURE -----
   // TODO: Uncomment when courses feature is migrated
@@ -164,12 +171,35 @@ void _initAuthFeature() {
   );
 }
 
-// void _initUserProfileFeature() {
-//   // Cubits
-//   // Use Cases
-//   // Repositories
-//   // Data Sources
-// }
+void _initUserProfileFeature() {
+  // Data Sources
+  sl.registerLazySingleton<UserProfileRemoteDataSource>(
+    () => UserProfileRemoteDataSourceImpl(firestore: sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<UserProfileRepository>(
+    () => UserProfileRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetUserProfileUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateUsernameUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateProfileImageUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateScoreUseCase(sl()));
+  sl.registerLazySingleton(() => CreateUserProfileUseCase(sl()));
+
+  // Cubits - Factory so each screen gets a fresh instance
+  sl.registerFactory(
+    () => ProfileCubit(
+      getUserProfileUseCase: sl(),
+      updateUsernameUseCase: sl(),
+      updateProfileImageUseCase: sl(),
+      updateScoreUseCase: sl(),
+      createUserProfileUseCase: sl(),
+    ),
+  );
+}
 
 // void _initCoursesFeature() {
 //   // Cubits
