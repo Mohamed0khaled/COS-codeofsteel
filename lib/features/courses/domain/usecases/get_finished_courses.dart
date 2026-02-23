@@ -15,4 +15,5 @@ class GetFinishedCourses implements UseCase<List<CourseEntity>, String> {
   Future<Either<Failure, List<CourseEntity>>> call(String userId) {
     return _repository.getFinishedCourses(userId);
   }
+
 }

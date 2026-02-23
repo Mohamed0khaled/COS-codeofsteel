@@ -74,4 +74,10 @@ abstract class CourseRepository {
     String code,
     int currentPrice,
   );
+
+  /// Fetches global courses catalog and syncs to user's collection
+  /// Returns all courses (merging global catalog with user-specific data)
+  Future<Either<Failure, List<CourseEntity>>> syncAndGetAllCourses(
+    String userId,
+  );
 }

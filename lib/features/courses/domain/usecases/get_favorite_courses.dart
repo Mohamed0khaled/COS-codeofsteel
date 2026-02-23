@@ -15,4 +15,5 @@ class GetFavoriteCourses implements UseCase<List<CourseEntity>, String> {
   Future<Either<Failure, List<CourseEntity>>> call(String userId) {
     return _repository.getFavoriteCourses(userId);
   }
+
 }

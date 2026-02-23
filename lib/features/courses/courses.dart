@@ -18,6 +18,7 @@ export 'domain/usecases/get_favorite_courses.dart';
 export 'domain/usecases/get_finished_courses.dart';
 export 'domain/usecases/get_saved_courses.dart';
 export 'domain/usecases/purchase_course.dart';
+export 'domain/usecases/sync_and_get_all_courses.dart';
 export 'domain/usecases/toggle_favorite.dart';
 export 'domain/usecases/toggle_saved.dart';
 export 'domain/usecases/update_course_progress.dart';

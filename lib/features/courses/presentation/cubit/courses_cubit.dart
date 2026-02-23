@@ -9,6 +9,7 @@ import '../../domain/usecases/get_favorite_courses.dart';
 import '../../domain/usecases/get_finished_courses.dart';
 import '../../domain/usecases/get_saved_courses.dart';
 import '../../domain/usecases/purchase_course.dart';
+import '../../domain/usecases/sync_and_get_all_courses.dart';
 import '../../domain/usecases/toggle_favorite.dart';
 import '../../domain/usecases/toggle_saved.dart';
 import '../../domain/usecases/update_course_progress.dart';
@@ -27,6 +28,7 @@ class CoursesCubit extends Cubit<CoursesState> {
   final CheckCourseOwnership _checkCourseOwnership;
   final ApplyDiscountCode _applyDiscountCode;
   final PurchaseCourse _purchaseCourse;
+  final SyncAndGetAllCourses _syncAndGetAllCourses;
 
   CoursesCubit({
     required GetCourseDetails getCourseDetails,
@@ -40,6 +42,7 @@ class CoursesCubit extends Cubit<CoursesState> {
     required CheckCourseOwnership checkCourseOwnership,
     required ApplyDiscountCode applyDiscountCode,
     required PurchaseCourse purchaseCourse,
+    required SyncAndGetAllCourses syncAndGetAllCourses,
   })  : _getCourseDetails = getCourseDetails,
         _getFavoriteCourses = getFavoriteCourses,
         _getSavedCourses = getSavedCourses,
@@ -51,7 +54,20 @@ class CoursesCubit extends Cubit<CoursesState> {
         _checkCourseOwnership = checkCourseOwnership,
         _applyDiscountCode = applyDiscountCode,
         _purchaseCourse = purchaseCourse,
+        _syncAndGetAllCourses = syncAndGetAllCourses,
         super(const CoursesInitial());
+
+  /// Sync and load all courses from global catalog
+  Future<void> loadAllCourses(String userId) async {
+    emit(const CoursesLoading());
+
+    final result = await _syncAndGetAllCourses(userId);
+
+    result.fold(
+      (failure) => emit(CoursesError(failure.message)),
+      (courses) => emit(CoursesListLoaded(courses)),
+    );
+  }
 
   /// Load details of a specific course
   Future<void> loadCourseDetails(String userId, int courseId) async {

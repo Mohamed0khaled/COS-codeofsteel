@@ -54,3 +54,9 @@ export 'data/repositories/auth_repository_impl.dart';
 // Presentation - Cubit
 export 'presentation/cubit/auth_cubit.dart';
 export 'presentation/cubit/auth_state.dart';
+
+// Presentation - Pages
+export 'presentation/pages/auth_page.dart';
+export 'presentation/pages/signin_page.dart';
+export 'presentation/pages/signup_page.dart';
+export 'presentation/pages/activate_page.dart';

@@ -246,4 +246,76 @@ class CourseRepositoryImpl implements CourseRepository {
       return Left(ServerFailure(message: 'Failed to apply discount: $e'));
     }
   }
+
+  @override
+  Future<Either<Failure, List<CourseEntity>>> syncAndGetAllCourses(
+    String userId,
+  ) async {
+    try {
+      // 1. Fetch global courses catalog
+      print('🔍 Fetching global courses from /courses collection...');
+      final globalSnapshot = await _firestore.collection('courses').get();
+      print('📦 Found ${globalSnapshot.docs.length} global courses');
+      
+      if (globalSnapshot.docs.isEmpty) {
+        print('⚠️ No courses found in global /courses collection');
+        return const Right([]);
+      }
+      
+      // 2. Fetch user's current courses
+      print('🔍 Fetching user courses from /users/$userId/courses...');
+      final userSnapshot = await _coursesCollection(userId).get();
+      final userCourseIds = userSnapshot.docs.map((doc) => doc.id).toSet();
+      print('📦 Found ${userSnapshot.docs.length} user courses');
+      
+      // 3. Sync: Add any missing global courses to user's collection
+      final batch = _firestore.batch();
+      bool hasBatchWrites = false;
+      
+      for (final globalDoc in globalSnapshot.docs) {
+        if (!userCourseIds.contains(globalDoc.id)) {
+          // Course doesn't exist in user's collection, add it
+          final globalData = globalDoc.data();
+          print('➕ Adding course ${globalDoc.id}: ${globalData['name']}');
+          final userCourseData = {
+            'id': globalData['id'] ?? int.tryParse(globalDoc.id) ?? 0,
+            'name': globalData['name'] ?? '',
+            'card_image': globalData['card_image'] ?? '',
+            'price': globalData['price'] ?? 0,
+            // User-specific fields - defaults
+            'favorite': false,
+            'saved': false,
+            'finished': false,
+            'progress': 0,
+            'owned': (globalData['price'] ?? 0) == 0, // Free courses are auto-owned
+          };
+          
+          final userDocRef = _coursesCollection(userId).doc(globalDoc.id);
+          batch.set(userDocRef, userCourseData);
+          hasBatchWrites = true;
+        }
+      }
+      
+      // Commit batch if there are new courses to add
+      if (hasBatchWrites) {
+        print('💾 Committing batch write...');
+        await batch.commit();
+      }
+      
+      // 4. Fetch updated user courses
+      final updatedSnapshot = await _coursesCollection(userId).get();
+      final courses = updatedSnapshot.docs
+          .map((doc) => CourseModel.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+      
+      // Sort by id
+      courses.sort((a, b) => a.id.compareTo(b.id));
+      
+      print('✅ Returning ${courses.length} courses');
+      return Right(courses);
+    } catch (e) {
+      print('❌ Error in syncAndGetAllCourses: $e');
+      return Left(ServerFailure(message: 'Failed to sync courses: $e'));
+    }
+  }
 }

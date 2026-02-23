@@ -18,3 +18,6 @@ export 'data/repositories/onboarding_repository_impl.dart';
 // Presentation - Cubit
 export 'presentation/cubit/onboarding_cubit.dart';
 export 'presentation/cubit/onboarding_state.dart';
+
+// Presentation - Pages
+export 'presentation/pages/welcome_manager_page.dart';

@@ -253,6 +253,7 @@ void _initCoursesFeature() {
   sl.registerLazySingleton(() => CheckCourseOwnership(sl()));
   sl.registerLazySingleton(() => ApplyDiscountCode(sl()));
   sl.registerLazySingleton(() => PurchaseCourse(sl()));
+  sl.registerLazySingleton(() => SyncAndGetAllCourses(sl()));
 
   // Cubits - Factory so each screen gets a fresh instance
   sl.registerFactory(
@@ -268,6 +269,7 @@ void _initCoursesFeature() {
       checkCourseOwnership: sl(),
       applyDiscountCode: sl(),
       purchaseCourse: sl(),
+      syncAndGetAllCourses: sl(),
     ),
   );
 }
